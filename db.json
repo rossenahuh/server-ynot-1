@@ -51,14 +51,14 @@
 			"id": "4",
 			"name": "해운대뽈찜",
 			"address": "부산시 해운대구 센텀시티 50",
-			"location": "서울",
+			"location": "부산",
 			"photo": "http://www.menupan.com/restaurant/restimg/007/zzmenuimg/h1193376_z.jpg"
 		},
 		{
 			"id": "5",
 			"name": "낙영찜갈비",
 			"address": "대구시 대구대로 30",
-			"location": "서울",
+			"location": "대구",
 			"photo": "http://www.menupan.com/restaurant/restimg/007/zzmenuimg/h1193376_z.jpg"
 		},
 		{
@@ -171,6 +171,30 @@
 			"comment": "정말 맛있어요",
 			"rating": 5,
 			"date": "2019-03-20"
+		},
+		{
+			"id": "12",
+			"userID": "1",
+			"restaurantID": "2",
+			"comment": "정말 맛있어요 너무너문조아요 다시올거에욤ㄴ아ㅓㄻ ㅣ아ㅓㄹ",
+			"rating": 5,
+			"date": "2019-03-29"
+		},
+		{
+			"id": "13",
+			"userID": "3",
+			"restaurantID": "4",
+			"comment": "맛있어요",
+			"rating": 4,
+			"date": "2019-03-29"
+		},
+		{
+			"id": "14",
+			"userID": "2",
+			"restaurantID": "7",
+			"comment": "그냥 그래요",
+			"rating": 3,
+			"date": "2019-03-22"
 		}
 	],
 	"images": [
