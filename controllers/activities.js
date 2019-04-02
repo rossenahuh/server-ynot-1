@@ -1,16 +1,25 @@
 const models = require('../models');
-const Sequelize = require('sequelize');
 
 module.exports = {
-	getNRecentlyCreated: (req, res, next) => {
-		var number = req.query.howmany;
-		console.log('getNRecentlyCreated::: ', number);
-		res.send('hi');
+	getTop9recentlyCreated: (req, res, next) => {
+		models.reviews
+			.findAll({
+				attributes: [ 'rating', 'comment' ],
+				include: [
+					{
+						model: models.users,
+						attributes: [ 'name', 'profilePhoto' ]
+					},
+					{
+						model: models.restaurants,
+						attributes: [ 'name' ]
+					}
+				],
+				//날짜 최신순으로 9개 뽑아오는 logic
+				order: [ [ 'id', 'DESC' ] ],
+				limit: 9
+			})
+			.then((list) => res.json(list))
+			.catch((err) => res.send(err));
 	}
 };
-
-// var _q = Table;
-// _q.findAll({
-// attributes: [['fields', 'fields']],
-// order: [['id' ,'DESC']],limit: 1,
-// });
