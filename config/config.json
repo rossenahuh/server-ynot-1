@@ -1,0 +1,8 @@
+{
+	"username": "ynot",
+	"password": "ynotdatabase",
+	"database": "ynot_database",
+	"host": "database-ynot.c4ynijsbteiz.us-east-2.rds.amazonaws.com",
+	"dialect": "mysql",
+	"port": 3800
+}
