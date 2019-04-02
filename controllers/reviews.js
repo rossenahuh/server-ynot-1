@@ -35,5 +35,28 @@ module.exports = {
 				let reveiwOfTheDay = reviews.reduce(pickTheReviewOfTheDay);
 				res.json(reveiwOfTheDay);
 			});
+	},
+	getAverageRatingOfTheRestaurant: async (req, res, next) => {
+		let ratingList = await models.reviews.findAll({
+			attributes: [ 'rating' ],
+			where: {
+				restaurantID: req.query.restaurantID
+			}
+		});
+
+		let sum = 0;
+		for (let i = 0; i < ratingList.length; i++) {
+			sum += ratingList[i]['rating'];
+		}
+
+		let averageRating = sum / ratingList.length;
+
+		res.json(averageRating);
+	},
+	insertReview: (req, res, next) => {
+		models.reviews
+			.create(req.body)
+			.then((result) => res.send('Successfully archived!'))
+			.catch((err) => res.send(err));
 	}
 };
