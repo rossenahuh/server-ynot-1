@@ -1,36 +1,56 @@
 const models = require('../models');
 
 module.exports = {
-	getInfoOfTheRestaurant: (req, res, next) => {
+	getInfoOfTheRestaurant: async (req, res, next) => {
 		//레스토랑이름, 연락처, 주소, 대표사진, 리뷰코멘트, 리뷰사진
-		models.restaurants
-			.findOne({
-				attributes: [ 'name', 'address', 'contact', 'src' ],
-				where: {
-					id: req.query.id
-				}
-			})
-			.then((restaurantInfo) => {
-				res.json(restaurantInfo);
-			})
-			.catch((err) => res.send(err));
-	},
-	getNearbyRestaurnats: (req, res, next) => {
-		models.restaurants
-			.findAll({
-				where: {
-					district: req.query.district
+		let restaurantInfo = await models.reviews.findOne({
+			where: {
+				restaurantID: req.query.id
+			},
+			include: [
+				{
+					model: models.restaurants
 				},
-				include: [
-					{
-						model: models.reviews,
-						attributes: [ 'comment', 'photo' ]
-					}
-				]
-			})
-			.then((restaurantInfo) => {
-				res.json(restaurantInfo);
-			})
-			.catch((err) => res.send(err));
+				{
+					model: models.users,
+					attributes: [ 'id', 'name', 'profilePhoto', 'createdAt' ]
+				}
+			]
+		});
+
+		let restaurantID = restaurantInfo['restaurantID'];
+
+		let ratingList = await models.reviews.findAll({
+			attributes: [ 'rating' ],
+			where: {
+				restaurantID: restaurantID
+			}
+		});
+
+		let sum = 0;
+		for (let i = 0; i < ratingList.length; i++) {
+			sum += ratingList[i]['rating'];
+		}
+
+		let averageRating = { averageRating: sum / ratingList.length };
+		Object.assign(restaurantInfo.dataValues, averageRating);
+		res.json(restaurantInfo);
+	},
+	getNearbyRestaurnats: async (req, res, next) => {
+		let restaurantList = await models.restaurants.findAll({
+			where: {
+				district: req.query.district
+			}
+		});
+
+		// for (let restaurant of restaurantList) {
+		// 	let a = await models.reviews.findAll({
+		// 		attributes: [ 'rating' ],
+		// 		where: {
+		// 			restaurantID: restaurant['id']
+		// 		}
+		// 	});
+		// }
+		res.json(restaurantList);
 	}
 };

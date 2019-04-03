@@ -13,34 +13,31 @@ let pickTheReviewOfTheDay = (acc, cur) => {
 };
 
 module.exports = {
-	getReviewOfTheDay: (req, res, next) => {
+	getReviewOfTheDay: async (req, res, next) => {
 		let todayMidnight = new Date();
 		todayMidnight.setHours(0, 0, 0, 0);
-		models.reviews
-			.findAll({
-				attributes: [ 'rating', 'comment' ],
-				where: {
-					createdAt: {
-						[Op.gte]: todayMidnight
-					}
-				},
-				include: [
-					{
-						model: models.users,
-						attributes: [ 'name' ]
-					}
-				]
-			})
-			.then((reviews) => {
-				let reveiwOfTheDay = reviews.reduce(pickTheReviewOfTheDay);
-				res.json(reveiwOfTheDay);
-			});
-	},
-	getAverageRatingOfTheRestaurant: async (req, res, next) => {
+		let reviewList = await models.reviews.findAll({
+			where: {
+				createdAt: {
+					[Op.gte]: todayMidnight
+				}
+			},
+			include: [
+				{
+					model: models.users,
+					attributes: [ 'name' ]
+				}
+			]
+		});
+
+		let reveiwOfTheDay = reviewList.reduce(pickTheReviewOfTheDay);
+
+		let restaurantID = reveiwOfTheDay['restaurantID'];
+
 		let ratingList = await models.reviews.findAll({
 			attributes: [ 'rating' ],
 			where: {
-				restaurantID: req.query.restaurantID
+				restaurantID: restaurantID
 			}
 		});
 
@@ -49,9 +46,10 @@ module.exports = {
 			sum += ratingList[i]['rating'];
 		}
 
-		let averageRating = sum / ratingList.length;
-
-		res.json(averageRating);
+		let averageRating = { averageRating: sum / ratingList.length };
+		Object.assign(reveiwOfTheDay.dataValues, averageRating);
+		// console.log('reviewOfTheDay::: ', reveiwOfTheDay);
+		res.send(reveiwOfTheDay);
 	},
 	insertReview: (req, res, next) => {
 		models.reviews
