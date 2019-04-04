@@ -43,14 +43,29 @@ module.exports = {
 			}
 		});
 
-		// for (let restaurant of restaurantList) {
-		// 	let a = await models.reviews.findAll({
-		// 		attributes: [ 'rating' ],
-		// 		where: {
-		// 			restaurantID: restaurant['id']
-		// 		}
-		// 	});
-		// }
-		res.json(restaurantList);
+		let result = [];
+
+		// restaurantList.forEach((element) => {
+		// 	result.push(element);
+		// });
+
+		for (let restaurant of restaurantList) {
+			let ratingList = await models.reviews.findAll({
+				attributes: [ 'rating' ],
+				where: {
+					restaurantID: restaurant['id']
+				}
+			});
+
+			let sum = 0;
+			for (let i = 0; i < ratingList.length; i++) {
+				sum += ratingList[i]['rating'];
+			}
+
+			let averageRating = { averageRating: sum / ratingList.length };
+			Object.assign(restaurant.dataValues, averageRating);
+			result.push(restaurant);
+		}
+		res.json(result);
 	}
 };
