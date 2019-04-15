@@ -25,6 +25,10 @@ module.exports = {
 			include: [
 				{
 					model: models.users,
+					attributes: [ 'name', 'profilePhoto' ]
+				},
+				{
+					model: models.restaurants,
 					attributes: [ 'name' ]
 				}
 			]
@@ -52,9 +56,12 @@ module.exports = {
 		res.send(reveiwOfTheDay);
 	},
 	insertReview: (req, res, next) => {
-		models.reviews
-			.create(req.body)
-			.then((result) => res.send('Successfully archived!'))
-			.catch((err) => res.send(err));
+		// console.log('body::::: ', req.body);
+		if (req.body.restaurantID && req.body.userID) {
+			models.reviews
+				.create(req.body)
+				.then((result) => res.send('Successfully archived!'))
+				.catch((err) => res.send(err));
+		}
 	}
 };

@@ -2,23 +2,27 @@ const models = require('../models');
 
 module.exports = {
 	getInfoOfTheRestaurant: async (req, res, next) => {
-		//레스토랑이름, 연락처, 주소, 대표사진, 리뷰코멘트, 리뷰사진
-		let restaurantInfo = await models.reviews.findOne({
+		let restaurantInfo = await models.restaurants.findOne({
 			where: {
-				restaurantID: req.query.id
+				id: req.query.restaurantID
+			}
+		});
+
+		let reviews = await models.reviews.findAll({
+			where: {
+				restaurantID: req.query.restaurantID
 			},
 			include: [
 				{
-					model: models.restaurants
-				},
-				{
 					model: models.users,
-					attributes: [ 'id', 'name', 'profilePhoto', 'createdAt' ]
+					attributes: [ 'name', 'profilePhoto' ]
 				}
 			]
 		});
+		// console.log('resInfo::: ', restaurantInfo);
+		// console.log('reviews::: ', reviews);
 
-		let restaurantID = restaurantInfo['restaurantID'];
+		let restaurantID = restaurantInfo['id'];
 
 		let ratingList = await models.reviews.findAll({
 			attributes: [ 'rating' ],
@@ -32,8 +36,12 @@ module.exports = {
 			sum += ratingList[i]['rating'];
 		}
 
-		let averageRating = { averageRating: sum / ratingList.length };
+		let averageRating = ratingList.length ? { averageRating: sum / ratingList.length } : { averageRating: 0 };
+		let reviewNum = { reviewNum: ratingList.length };
+		let reviewList = { reviewList: reviews };
 		Object.assign(restaurantInfo.dataValues, averageRating);
+		Object.assign(restaurantInfo.dataValues, reviewNum);
+		Object.assign(restaurantInfo.dataValues, reviewList);
 		res.json(restaurantInfo);
 	},
 	getNearbyRestaurnats: async (req, res, next) => {
@@ -45,26 +53,29 @@ module.exports = {
 
 		let result = [];
 
-		// restaurantList.forEach((element) => {
-		// 	result.push(element);
-		// });
-
-		for (let restaurant of restaurantList) {
-			let ratingList = await models.reviews.findAll({
-				attributes: [ 'rating' ],
+		for (let i = 0; i < restaurantList.length; i++) {
+			let reviewList = await models.reviews.findAll({
+				attributes: [ 'rating', 'comment' ],
 				where: {
-					restaurantID: restaurant['id']
+					restaurantID: restaurantList[i]['id']
 				}
 			});
-
 			let sum = 0;
-			for (let i = 0; i < ratingList.length; i++) {
-				sum += ratingList[i]['rating'];
+			for (let i = 0; i < reviewList.length; i++) {
+				sum += reviewList[i]['rating'];
 			}
 
-			let averageRating = { averageRating: sum / ratingList.length };
-			Object.assign(restaurant.dataValues, averageRating);
-			result.push(restaurant);
+			let latestComment = reviewList.length
+				? { latestComment: reviewList[reviewList.length - 1]['comment'] }
+				: { latestComment: '작성된 리뷰가 없습니다' };
+
+			let reviewNum = { numberOfReviews: reviewList.length };
+			let averageRating = reviewList.length ? { averageRating: sum / reviewList.length } : { averageRating: 0 };
+			// console.log('averageRating::: ', averageRating);
+			Object.assign(restaurantList[i].dataValues, averageRating);
+			Object.assign(restaurantList[i].dataValues, reviewNum);
+			Object.assign(restaurantList[i].dataValues, latestComment);
+			result.push(restaurantList[i]);
 		}
 		res.json(result);
 	}

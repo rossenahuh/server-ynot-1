@@ -12,7 +12,7 @@ module.exports = {
 					},
 					{
 						model: models.restaurants,
-						attributes: [ 'name' ]
+						attributes: [ 'name', 'src' ]
 					}
 				],
 				//날짜 최신순으로 9개 뽑아오는 logic

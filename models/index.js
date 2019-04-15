@@ -17,9 +17,9 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 	}
 });
 
-// sequelize.sync({ force: true });
+sequelize.sync({ force: true });
 
-sequelize.sync();
+// sequelize.sync();
 
 fs
 	.readdirSync(__dirname)

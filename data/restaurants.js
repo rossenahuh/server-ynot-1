@@ -11,7 +11,7 @@ module.exports = [
 		address: '성수동 뚝섬대로 52',
 		district: '성수',
 		contact: '02-123-2345',
-		src: 'https://t1.daumcdn.net/cfile/tistory/997F613359E84A2031'
+		src: 'https://t1.daumcdn.net/cfile/tistory/992E34435AF012BD14'
 	},
 	{
 		name: '무차초',
